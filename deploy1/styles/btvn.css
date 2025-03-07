@@ -1,9 +1,8 @@
 * {
-    margin: 0;
+    margin: auto;
     padding: 0;
     box-sizing: border-box;
-     max-width: 70vw;
-    /* box-shadow:#74c234 0px 0px 1px; */
+    max-width: 70vw;
 }
 
 header {
@@ -15,11 +14,16 @@ header {
 .brand-text {
     font-size: 1.5rem;
     font-weight: bold;
+    margin-left: 0;
 }
 
 body {
     font-family: Arial, sans-serif;
     background-color: #f1f1f1;
+    width: auto;
+    max-width: max-content;
+    margin: 5px;
+
 }
 
 /* div {
@@ -56,6 +60,7 @@ img {
     /* justify-content: space-around; */
     padding: 10px;
     margin-left: auto;
+    margin-right: 0;
     justify-content: right;
     align-content: center;
 }
