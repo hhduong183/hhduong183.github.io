@@ -2,15 +2,15 @@
     margin: auto;
     padding: 0;
     box-sizing: border-box;
-    max-width: 70vw;
+    /* max-width: 70vw; */
 }
 
 header {
     display: flex;
     flex-direction: row;
     padding: 15px;
-    margin-right: auto;
-    margin-left: 0;
+    /* margin-right: auto;
+    margin-left: 0; */
 }
 
 .brand-text {
@@ -22,9 +22,9 @@ header {
 body {
     font-family: Arial, sans-serif;
     background-color: #f1f1f1;
-    width: auto;
-    max-width: max-content;
-    margin: 5px;
+    /* width: auto; */
+    /* max-width: max-content; */
+    /* margin: 5px; */
 
 }
 .menu {
@@ -54,4 +54,17 @@ body {
 
 .menu_item:hover {
     background-color: #74c234;
+}
+img{
+    object-fit: cover;
+    align-self: top;
+width: 100px;
+}
+.row{
+    display: flex;
+    flex-direction: row;
+    justify-content: top;
+    /* align-items: center; */
+    padding: 5px;
+    margin: 5px;
 }
