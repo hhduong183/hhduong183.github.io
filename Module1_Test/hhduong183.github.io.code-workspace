@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		},
+		{
+			"path": "../../../00_GIT/T3H_2025_REACTJS"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "hhduong183.github.io"
+	}
+}
