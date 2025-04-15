@@ -1,4 +1,4 @@
-a = prompt("Nhập số a: ");
+let a = question("Nhập tuổi của bạn: ");
 if (a >= 18) {
     console.log("Người dùng đã đủ tuổi");
 } else {
