@@ -8,6 +8,7 @@
 		}
 	],
 	"settings": {
-		"liveServer.settings.multiRootWorkspaceName": "hhduong183.github.io"
+		"liveServer.settings.multiRootWorkspaceName": "hhduong183.github.io",
+		"git.ignoreLimitWarning": true
 	}
 }
