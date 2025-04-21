@@ -22,7 +22,7 @@ function renderStudents() {
                 <td>${student.literatureScore}</td>
                 <td>${avarageScore(student.mathScore , student.englishScore , student.literatureScore)}</td>
                 <td>
-                    <button class="btn btn-success btn-sm"  onclick="updateStudent(${index})">Update</button>
+                    <button class="btn btn-success btn-sm" onclick="updateStudent(${index})">Update</button>
                     <button class="btn btn-danger btn-sm" onclick="deleteStudent(${index})">Delete</button>
                 </td>
             </tr>
@@ -31,10 +31,10 @@ function renderStudents() {
     });
 }
 
-
+renderStudents();
 
 function createStudent(event) {
-    event.preventDefault(); 
+    event.preventDefault();
     
     // Lấy dữ liệu hiện có từ localStorage
     let studentsList = JSON.parse(localStorage.getItem('students')) || [];
@@ -46,35 +46,48 @@ function createStudent(event) {
     const englishScore = parseFloat(document.getElementById('englishScore').value);
     const literatureScore = parseFloat(document.getElementById('literatureScore').value);
 
-    // kiểm tra đủ dữ liệu
+    // Kiểm tra đủ dữ liệu
     if (!name || !gender || isNaN(mathScore) || isNaN(englishScore) || isNaN(literatureScore)) {
         alert('Vui lòng điền đầy đủ thông tin!');
         return;
     }
 
-    // Tạo object sinh viên mới
-    const newStudent = {
-        name,
-        gender,
-        mathScore,
-        englishScore,
-        literatureScore
-    };
+    const updateIndex = document.getElementById('updateIndex')?.value;
 
-    // Thêm sinh viên mới vào danh sách
-    studentsList.push(newStudent);
+    if (updateIndex !== undefined && updateIndex !== '') {
+        // Cập nhật sinh viên
+        studentsList[updateIndex] = {
+            name,
+            gender,
+            mathScore,
+            englishScore,
+            literatureScore
+        };
+    } else {
+        // Thêm sinh viên mới
+        studentsList.push({
+            name,
+            gender,
+            mathScore,
+            englishScore,
+            literatureScore
+        });
+    }
 
-    // Cập nhật lại localStorage
+    // Cập nhật localStorage
     localStorage.setItem('students', JSON.stringify(studentsList));
+
+    // Reset form
+    document.getElementById('studentForm').reset();
+    document.querySelector('button[type="submit"]').textContent = 'Create Student';
+    document.getElementById('updateIndex').value = '';
 
     // Render lại danh sách
     renderStudents();
-
-    // Xóa data cũ trong form
-    // document.getElementById('studentForm').reset();
 }
 
-
+// Thêm event listener cho form
+document.getElementById('studentForm').addEventListener('submit', createStudent);
 
 function deleteStudent(index) {
     // Xác nhận trước khi xóa
@@ -93,10 +106,34 @@ function deleteStudent(index) {
     }
 }
 
-// Thêm event listener cho form
-document.getElementById('studentForm').addEventListener('submit', createStudent);
-renderStudents();
+function updateStudent(index) {
+    // Lấy dữ liệu hiện có từ localStorage
+    let studentsList = JSON.parse(localStorage.getItem('students')) || [];
+    
+    // Lấy sinh viên tại vị trí index
+    const student = studentsList[index];
 
+    // Điền dữ liệu vào form
+    document.getElementById('name').value = student.name;
+    // Sửa lại cách chọn radio button
+    document.querySelector(`input[name="gender"][value="${student.gender}"]`).checked = true;
+    document.getElementById('mathScore').value = student.mathScore;
+    document.getElementById('englishScore').value = student.englishScore;
+    document.getElementById('literatureScore').value = student.literatureScore;
+    
+    // Thêm hidden input để lưu index
+    if (!document.getElementById('updateIndex')) {
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.id = 'updateIndex';
+        document.getElementById('studentForm').appendChild(hiddenInput);
+    }
+    document.getElementById('updateIndex').value = index;
+
+    // Đổi text của nút submit
+    document.querySelector('button[type="submit"]').textContent = 'Update Student';
+}
 
 // Thêm vào cuối file
 window.deleteStudent = deleteStudent;
+window.updateStudent = updateStudent;
