@@ -1,98 +1,37 @@
 <!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Layout W3Schools Style</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<html>
+  <head>
+    <title>Sơ đồ tổ chức</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+      google.charts.load('current', {packages:["orgchart"]});
+      google.charts.setOnLoadCallback(drawChart);
 
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-        }
+      function drawChart() {
+        fetch("get_data.php") // file PHP trả về JSON
+          .then(res => res.json())
+          .then(data => {
+            const orgData = new google.visualization.DataTable();
+            orgData.addColumn('string', 'Name');
+            orgData.addColumn('string', 'Manager');
+            orgData.addColumn('string', 'ToolTip');
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            height: 100vh;
-            background: #282A35;
-            color: white;
-            padding: 15px;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            overflow-y: auto;
-        }
+            data.forEach(row => {
+              orgData.addRow([
+                {v: String(row.id), f: row.name + '<div style="color:gray">' + row.title + '</div>'},
+                row.parent ? String(row.parent) : null,
+                row.title
+              ]);
+            });
 
-        /* Topbar */
-        .topbar {
-            width: calc(100% - 250px);
-            height: 50px;
-            background: #04AA6D;
-            color: white;
-            padding: 10px 20px;
-            position: fixed;
-            top: 0;
-            left: 250px;
-            display: flex;
-            align-items: center;
-        }
-
-        /* Main content */
-        .content {
-            margin-left: 250px;
-            margin-top: 50px;
-            padding: 20px;
-            width: calc(100% - 250px);
-            min-height: calc(100vh - 50px);
-        }
-
-        /* Footer */
-        .footer {
-            width: 100%;
-            height: 50px;
-            background: #333;
-            color: white;
-            text-align: center;
-            position: fixed;
-            bottom: 0;
-            left: 250px;
-            width: calc(100% - 250px);
-            padding: 10px 0;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="sidebar">
-        <h2>Sidebar</h2>
-        <ul>
-            <li><a href="#">Trang chủ</a></li>
-            <li><a href="#">Giới thiệu</a></li>
-            <li><a href="#">Dịch vụ</a></li>
-            <li><a href="#">Liên hệ</a></li>
-        </ul>
-    </div>
-
-    <div class="topbar">
-        <h1>W3Schools Layout</h1>
-    </div>
-
-    <div class="content">
-        <h2>Nội dung chính</h2>
-        <p>Đây là khu vực nội dung của trang web.</p>
-        <p>Bạn có thể thêm nội dung tùy ý tại đây.</p>
-    </div>
-
-    <div class="footer">
-        <p>&copy; 2025 W3Schools Clone</p>
-    </div>
-
-</body>
+            const chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+            chart.draw(orgData, {allowHtml: true});
+          });
+      }
+    </script>
+  </head>
+  <body>
+    <h2>Sơ đồ tổ chức</h2>
+    <div id="chart_div"></div>
+  </body>
 </html>

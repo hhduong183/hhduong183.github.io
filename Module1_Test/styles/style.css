@@ -1,5 +1,5 @@
 * {
-    margin: auto;
+    margin: 0;
     padding: 0;
     box-sizing: border-box;
     /* max-width: 70vw; */
@@ -19,14 +19,14 @@ header {
     margin-left: 0;
 }
 
-body {
+/* body {
     font-family: Arial, sans-serif;
     background-color: #f1f1f1;
     /* width: auto; */
     /* max-width: max-content; */
     /* margin: 5px; */
 
-}
+/* } */
 .menu {
     display: flex;
     flex-direction: row;
@@ -58,7 +58,7 @@ body {
 img{
     object-fit: cover;
     align-self: top;
-width: 100px;
+    width: 120px;
 }
 .row{
     display: flex;
