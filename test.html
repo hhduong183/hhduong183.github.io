@@ -1,37 +1,51 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Sơ đồ tổ chức</title>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script>
-      google.charts.load('current', {packages:["orgchart"]});
-      google.charts.setOnLoadCallback(drawChart);
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlE5j6+8z5v1x3k7Q9Zl1X5J6g5F5G5F5G5F5G5F5G5F5G5F5G5F5G" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl6+0nY5+5+5+5+5+5+5+5+5+5+5+5" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js">  </script>
+  <title>Document</title>
+</head>
+<body>
+  
 
-      function drawChart() {
-        fetch("get_data.php") // file PHP trả về JSON
-          .then(res => res.json())
-          .then(data => {
-            const orgData = new google.visualization.DataTable();
-            orgData.addColumn('string', 'Name');
-            orgData.addColumn('string', 'Manager');
-            orgData.addColumn('string', 'ToolTip');
+<div class="modal-body">
+  <form class="form-row align-items-center">
+      <div class="form-group col-md-3">
+          <label for="project">Project</label>
+          <select id="project" class="form-control form-control-sm select2">
+              <option value="">Select</option>
+              <?php foreach ($projects as $project): ?>
+                  <option value="<?= $project['id'] ?>"><?= $project['ma_du_an'] ?></option>
+              <?php endforeach; ?>
+          </select>
+      </div>
 
-            data.forEach(row => {
-              orgData.addRow([
-                {v: String(row.id), f: row.name + '<div style="color:gray">' + row.title + '</div>'},
-                row.parent ? String(row.parent) : null,
-                row.title
-              ]);
-            });
+      <div class="form-group col-md-3">
+          <label for="task">Task</label>
+          <select id="task" class="form-control form-control-sm select2">
+              <option value="">Select</option>
+              <?php foreach ($tasks as $task): ?>
+                  <option value="<?= $task['id'] ?>" data-project-id="<?= $task['project_id'] ?>"><?= $task['name'] ?></option>
+              <?php endforeach; ?>
+          </select>
+      </div>
 
-            const chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
-            chart.draw(orgData, {allowHtml: true});
-          });
-      }
-    </script>
-  </head>
-  <body>
-    <h2>Sơ đồ tổ chức</h2>
-    <div id="chart_div"></div>
-  </body>
+      <div class="form-group col-md-2">
+          <label for="hours">Hours</label>
+          <input id="hours" type="number" min="0" step="0.5" class="form-control form-control-sm" placeholder="0.0">
+      </div>
+
+      <div class="form-group col-md-2 d-flex align-items-center">
+          <div class="form-check mt-4">
+              <input id="isOvertime" type="checkbox" class="form-check-input">
+              <label class="form-check-label" for="isOvertime">Overtime</label>
+          </div>
+      </div>
+  </form>
+</div>
+
+</body>
 </html>

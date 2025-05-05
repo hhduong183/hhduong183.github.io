@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manhour Management</title>
+  <link rel="stylesheet" href="https://adminlte.io/themes/v3/plugins/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https://adminlte.io/themes/v3/plugins/fullcalendar/main.min.css">
+  <link rel="stylesheet" href="https://adminlte.io/themes/v3/dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <style>
+    .fc-event.ovt-event {
+      background-color: #dc3545 !important; /* Red for OVT */
+      border-color: #dc3545 !important;
+    }
+  </style>
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+  <div class="content-wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <h1>Manhour Management</h1>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="card card-primary">
+        <div class="card-body p-0">
+          <div id="calendar"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script src="https://adminlte.io/themes/v3/plugins/jquery/jquery.min.js"></script>
+<script src="https://adminlte.io/themes/v3/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://adminlte.io/themes/v3/plugins/moment/moment.min.js"></script>
+<script src="https://adminlte.io/themes/v3/plugins/fullcalendar/main.min.js"></script>
+<script src="https://adminlte.io/themes/v3/dist/js/adminlte.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+$(function () {
+  var calendarEl = document.getElementById('calendar');
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    selectable: true,
+    editable: true, // enable drag & drop
+    events: [],
+    select: function(info) {
+      // Show all manhour events in the selected day
+      const selectedEvents = calendar.getEvents().filter(e => moment(e.start).isSame(info.start, 'day'));
+
+      let html = `<ul style="text-align:left;">`;
+      selectedEvents.forEach(ev => {
+        html += `<li><b>${ev.extendedProps.project}</b> - ${ev.extendedProps.hours}h ${ev.classNames.includes('ovt-event') ? '(OVT)' : ''}</li>`;
+      });
+      html += `</ul>`;
+
+      Swal.fire({
+        title: 'Manhours on ' + info.startStr,
+        html: html + `
+          <button id="addManhour" class="swal2-confirm swal2-styled" style="background-color: #3085d6; margin-top:10px;">
+            Add New Manhour
+          </button>
+        `,
+        showConfirmButton: false
+      });
+
+      $(document).on('click', '#addManhour', function () {
+        Swal.close();
+        openManhourForm(info.startStr);
+      });
+    },
+    eventClick: function(info) {
+      editManhourForm(info.event);
+    },
+    eventDrop: function(info) {
+      // After dragging, you can update backend if needed
+      console.log(`Moved event ${info.event.title} to ${info.event.startStr}`);
+    }
+  });
+
+  calendar.render();
+
+  function openManhourForm(date) {
+    Swal.fire({
+      title: 'Add Manhour',
+      html: `
+        <input id="project" class="swal2-input" placeholder="Project ID">
+        <input id="worktype" class="swal2-input" placeholder="Work Type">
+        <input id="hours" type="number" min="0" step="0.5" class="swal2-input" placeholder="Manhour">
+      `,
+      focusConfirm: false,
+      showCancelButton: true,
+      preConfirm: () => {
+        const project = Swal.getPopup().querySelector('#project').value;
+        const worktype = Swal.getPopup().querySelector('#worktype').value;
+        const hours = parseFloat(Swal.getPopup().querySelector('#hours').value);
+
+        if (!project || isNaN(hours)) {
+          Swal.showValidationMessage(`Please enter Project ID and valid Manhour`);
+        }
+        return { project, worktype, hours };
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        let { project, worktype, hours } = result.value;
+        if (hours <= 8) {
+          calendar.addEvent({
+            title: `${project} - ${hours}h`,
+            start: date,
+            allDay: true,
+            extendedProps: { project, worktype, hours }
+          });
+        } else {
+          calendar.addEvent({
+            title: `${project} - 8h`,
+            start: date,
+            allDay: true,
+            extendedProps: { project, worktype, hours: 8 }
+          });
+          calendar.addEvent({
+            title: `${project} - OVT ${hours - 8}h`,
+            start: date,
+            allDay: true,
+            classNames: ['ovt-event'],
+            extendedProps: { project, worktype, hours: hours - 8, ovt: true }
+          });
+        }
+      }
+    });
+  }
+
+  function editManhourForm(event) {
+    const isOVT = event.classNames.includes('ovt-event');
+    Swal.fire({
+      title: isOVT ? 'Edit OVT' : 'Edit Manhour',
+      html: `
+        <input id="project" class="swal2-input" placeholder="Project ID" value="${event.extendedProps.project || ''}">
+        <input id="worktype" class="swal2-input" placeholder="Work Type" value="${event.extendedProps.worktype || ''}">
+        <input id="hours" type="number" min="0" step="0.5" class="swal2-input" value="${event.extendedProps.hours || 0}">
+      `,
+      focusConfirm: false,
+      showDenyButton: true,
+      confirmButtonText: 'Update',
+      denyButtonText: `Delete`,
+      showCancelButton: true,
+      cancelButtonText: 'Cancel',
+      preConfirm: () => {
+        const project = Swal.getPopup().querySelector('#project').value;
+        const worktype = Swal.getPopup().querySelector('#worktype').value;
+        const hours = parseFloat(Swal.getPopup().querySelector('#hours').value);
+
+        if (!project || isNaN(hours)) {
+          Swal.showValidationMessage(`Please enter Project ID and valid Manhour`);
+        }
+        return { project, worktype, hours };
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { project, worktype, hours } = result.value;
+        event.setProp('title', isOVT ? `${project} - OVT ${hours}h` : `${project} - ${hours}h`);
+        event.setExtendedProp('project', project);
+        event.setExtendedProp('worktype', worktype);
+        event.setExtendedProp('hours', hours);
+      } else if (result.isDenied) {
+        event.remove();
+      }
+    });
+  }
+});
+</script>
+
+</body>
+</html>
